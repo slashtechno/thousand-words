@@ -2,15 +2,20 @@
 import { authClient } from "@/lib/auth-client"; //import the auth client
 import { redirect } from "next/navigation";
 import { useState } from "react";
+import slugify from "slugify";
 
 async function handleSignUp(form: { password: string; name: string , username: string }) {
   let userId: string | null = null;
+
+  // Convert username to slug
+  const urlFriendlyUsername = slugify(form.username, { lower: true, strict: true });
+
   await authClient.signUp.email(
     {
       email: "example@example.com",
       password: form.password,
       name: form.name,
-      username: form.username,
+      username: urlFriendlyUsername,
     },
     {
       onError: (ctx) => {

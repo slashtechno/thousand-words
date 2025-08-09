@@ -1,4 +1,5 @@
 "use client";
+// TODO: Update every 1 second but only save every 5 seconds
 import React, { useRef, useEffect, useState } from "react";
 import Webcam from "react-webcam";
 import * as faceapi from "face-api.js";
