@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { signIn, useSession, updateUser, deleteUser } from '@/lib/auth-client'
 import { redirect } from 'next/navigation'
+import SignOutButton from '@/lib/components/signout'
 
 function Profile() {
   const { data, isPending, error } = useSession()
@@ -50,12 +51,14 @@ function Profile() {
       </form>
       <button onClick={remove} className='mt-4 text-red-600 text-sm underline'>Delete Account</button>
       {message && <p className='text-xs mt-2'>{message}</p>}
+      <br />
+      <SignOutButton/>
     </div>
   )
 }
 
 export default function LoginPage() {
-  const [form, setForm] = useState({ email: '', password: '' })
+  const [form, setForm] = useState({ username: '', password: '' })
   const [error, setError] = useState('')
   const { data } = useSession()
 
@@ -63,7 +66,7 @@ export default function LoginPage() {
     e.preventDefault()
     setError('')
     try {
-      await signIn.email({ email: form.email, password: form.password })
+      await signIn.username({ username: form.username, password: form.password })
       redirect('/')
     } catch (e: any) {
       setError(e.message || 'Failed')
@@ -75,13 +78,14 @@ export default function LoginPage() {
       <div className='w-full max-w-md'>
         <h1 className='text-2xl font-semibold mb-4 text-center'>Login</h1>
         {!data?.user && (
+          <>
           <form onSubmit={onSubmit} className='flex flex-col gap-3'>
             <input
               required
-              type='email'
-              placeholder='Email'
-              value={form.email}
-              onChange={e => setForm({ ...form, email: e.target.value })}
+              type='text'
+              placeholder='Username'
+              value={form.username}
+              onChange={e => setForm({ ...form, username: e.target.value })}
               className='border rounded px-3 py-2'
             />
             <input
@@ -95,6 +99,9 @@ export default function LoginPage() {
             <button type='submit' className='border rounded px-3 py-2 text-sm'>Sign In</button>
             {error && <p className='text-red-500 text-xs'>{error}</p>}
           </form>
+          <br />
+          <p>Want to <a href='/register' className='text-blue-500'>create an account?</a></p>
+          </>
         )}
         <Profile />
       </div>

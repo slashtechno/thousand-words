@@ -28,7 +28,7 @@ export default async function Home() {
         <h1 className="text-4xl font-bold mb-4">Welcome, {session.user?.name || session.user?.email}!</h1>
         <p className="mb-8">You are logged in with email: {session.user?.email}</p>
         <SignOutButton />
-        <FaceAnalyzer/>
+        <FaceAnalyzer session={session} />
       </div>
     );
   }

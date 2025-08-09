@@ -1,17 +1,30 @@
 "use client";
 import { authClient } from "@/lib/auth-client"; //import the auth client
+import { redirect } from "next/navigation";
 import { useState } from "react";
 
-async function handleSignUp(form: { email: string; password: string; name: string }) {
+async function handleSignUp(form: { password: string; name: string , username: string }) {
+  let userId: string | null = null;
   await authClient.signUp.email(
     {
-      email: form.email,
+      email: "example@example.com",
       password: form.password,
       name: form.name,
+      username: form.username,
     },
     {
       onError: (ctx) => {
         alert(ctx.error.message);
+      },
+      onSuccess: async (ctx) => {
+        userId = ctx.data?.user?.id;
+        if (userId) {
+          // Create profile for the new user
+          await import("@/app/actions").then(({ createProfile }) =>
+          createProfile({ userId: userId!, displayName: form.name })
+          );
+        }
+        redirect("/");
       },
     }
   );
@@ -19,9 +32,10 @@ async function handleSignUp(form: { email: string; password: string; name: strin
 
 export default function RegisterPage() {
   const [form, setForm] = useState({
-    email: "",
+    // email: "",
     password: "",
     name: "",
+    username: "",
   });
 
   return (
@@ -44,13 +58,21 @@ export default function RegisterPage() {
             className="border rounded px-3 py-2"
           />
           <input
+            type="text"
+            placeholder="Username"
+            value={form.username}
+            onChange={(e) => setForm({ ...form, username: e.target.value })}
+            required
+            className="border rounded px-3 py-2"
+          />
+          {/* <input
             type="email"
             placeholder="Email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             required
             className="border rounded px-3 py-2"
-          />
+          /> */}
           <input
             type="password"
             placeholder="Password"
@@ -63,6 +85,14 @@ export default function RegisterPage() {
             Sign Up
           </button>
         </form>
+      </div>
+      <div className="mt-4 text-center">
+        <p className="text-sm">
+          Already have an account?{" "}
+          <a href="/login" className="text-blue-500 hover:underline">
+            Log in
+          </a>
+        </p>
       </div>
     </div>
   );

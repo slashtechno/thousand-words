@@ -22,3 +22,4 @@ database: drizzleAdapter(db, {
     },
   },
 });
+export type Session = typeof auth.$Infer.Session

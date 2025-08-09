@@ -11,3 +11,4 @@ export const authClient = createAuthClient({
 
 // Export helpers from the configured client instance so plugin types are applied
 export const { signIn, signUp, useSession, updateUser, deleteUser } = authClient
+export type Session = typeof authClient.$Infer.Session
