@@ -18,6 +18,7 @@ export default function FaceAnalyzer({ session }: { session: Session }) {
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
+    let saveCounter = 0;
     async function setup() {
       await faceapi.nets.ssdMobilenetv1.loadFromUri("/models");
       await faceapi.nets.faceLandmark68Net.loadFromUri("/models");
@@ -48,9 +49,9 @@ export default function FaceAnalyzer({ session }: { session: Session }) {
             return { emotion: "", confidence: 0 };
           });
           setEmotions(newEmotions);
-          // console.log("Detected emotions:", newEmotions);
-          // Save the first detected emotion to the database
-          if (newEmotions.length > 0) {
+          // Save the first detected emotion to the database every 5th interval (5 seconds)
+          saveCounter++;
+          if (newEmotions.length > 0 && saveCounter % 5 === 0) {
             const profileId = await getProfileIdByUserId(session.user.id);
             if (profileId !== null) {
               console.log("Saving mood to DB:", {...newEmotions[0], profileId});
@@ -61,7 +62,7 @@ export default function FaceAnalyzer({ session }: { session: Session }) {
             }
           }
         }
-      }, runEvery);
+      }, 1000); // 1 second interval
     }
     setup();
     return () => clearInterval(interval);
