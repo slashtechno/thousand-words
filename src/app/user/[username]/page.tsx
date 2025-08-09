@@ -35,8 +35,9 @@ const moodConfig = [
   { key: "sad", label: "Sad", color: "#3498DB" }, // blue
 ];
 
-export default async function Page({ params }: { params: { username: string } }) {
-  const data = await getUserData(params.username);
+export default async function Page({ params }: { params: Promise<{ username: string }> }) {
+  const { username } = await params;
+  const data = await getUserData(username);
   if (!data) return <div style={{ color: '#fff', textAlign: 'center', marginTop: '20vh' }}>User not found.</div>;
   // Find most recent mood
   const latestMood = data.moods.length > 0 ? data.moods[0].emotion : null;
@@ -55,7 +56,11 @@ export default async function Page({ params }: { params: { username: string } })
       <div style={{ color: "#eee", fontSize: 32, fontWeight: 600, marginBottom: 8 }}>Name: {data.name}</div>
       <div style={{ color: "#aaa", fontSize: 20, marginBottom: 32 }}>@{data.username}</div>
       <div style={{ width: "100%", maxWidth: 900, background: "#fff", borderRadius: 16, boxShadow: "0 2px 16px #0002", padding: 32 }}>
-        <MoodLineChart moods={data.moods.filter(m => typeof m.timestamp === 'number' && m.timestamp !== null).map(({emotion, confidence, timestamp}) => ({emotion, confidence, timestamp: Number(timestamp)}))} />
+        <MoodLineChart moods={data.moods.map(mood => ({
+          emotion: mood.emotion,
+          confidence: mood.confidence,
+          timestamp: mood.timestamp instanceof Date ? Math.floor(mood.timestamp.getTime() / 1000) : Number(mood.timestamp)
+        }))} />
       </div>
     </main>
   );

@@ -12,7 +12,7 @@ const moodMap = {
   surprised: { y: 0, color: "#F7CA18" }, // bottom, yellow
 };
 
-export default function MoodLineChart({ moods: initialMoods }: { moods: Array<{ emotion: string, confidence: number, timestamp: number }> }) {
+export default function MoodLineChart({ moods: initialMoods }: { moods: Array<{ emotion: string, confidence: number, timestamp: number | Date }> }) {
   const [moods, setMoods] = useState(initialMoods);
   useEffect(() => {
     const interval = setInterval(() => {
@@ -23,15 +23,21 @@ export default function MoodLineChart({ moods: initialMoods }: { moods: Array<{ 
   }, [initialMoods]);
 
   // Prepare data for recharts
-  const sortedMoods = moods.sort((a, b) => a.timestamp - b.timestamp);
+  const sortedMoods = moods.sort((a, b) => {
+    const aTime = typeof a.timestamp === 'number' ? a.timestamp : new Date(a.timestamp).getTime() / 1000;
+    const bTime = typeof b.timestamp === 'number' ? b.timestamp : new Date(b.timestamp).getTime() / 1000;
+    return aTime - bTime;
+  });
   // If too many points, sample every Nth
   const maxPoints = 40;
   const step = Math.max(1, Math.floor(sortedMoods.length / maxPoints));
   const data = sortedMoods.filter((_, i) => i % step === 0 || i === sortedMoods.length - 1)
     .map(m => {
       const moodInfo = (moodMap as Record<string, { y: number; color: string }>)[m.emotion] || { y: 1, color: "#888888" };
+      // Handle both Unix timestamp (number) and Date objects
+      const timestamp = typeof m.timestamp === 'number' ? m.timestamp : Math.floor(new Date(m.timestamp).getTime() / 1000);
       return {
-        time: new Date(m.timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        time: new Date(timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         mood: moodInfo.y,
         color: moodInfo.color,
         emotion: m.emotion,
