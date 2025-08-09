@@ -2,8 +2,8 @@
 import { authClient } from "@/lib/auth-client"; //import the auth client
 import { useState } from "react";
 
-function handleSignUp(form: { email: string; password: string; name: string }) {
-  authClient.signUp.email(
+async function handleSignUp(form: { email: string; password: string; name: string }) {
+  await authClient.signUp.email(
     {
       email: form.email,
       password: form.password,
@@ -29,9 +29,9 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <h2 className="text-2xl font-semibold mb-4 text-center">Register</h2>
         <form
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
-            handleSignUp(form);
+            await handleSignUp(form);
           }}
           className="flex flex-col gap-3"
         >

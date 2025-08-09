@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { signIn, useSession, updateUser, deleteUser } from '@/lib/auth-client'
+import { redirect } from 'next/navigation'
 
 function Profile() {
   const { data, isPending, error } = useSession()
@@ -63,6 +64,7 @@ export default function LoginPage() {
     setError('')
     try {
       await signIn.email({ email: form.email, password: form.password })
+      redirect('/')
     } catch (e: any) {
       setError(e.message || 'Failed')
     }

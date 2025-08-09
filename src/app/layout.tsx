@@ -27,6 +27,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <nav className="w-full p-4 border-b mb-8">
+          <div className="max-w-3xl mx-auto flex justify-center items-center">
+            <a href="/" className="textWh-2xl font-bold underline">
+              Thousand Words
+            </a>
+          </div>
+        </nav>
         {children}
       </body>
     </html>

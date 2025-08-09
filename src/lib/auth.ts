@@ -3,10 +3,13 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { username } from "better-auth/plugins";
 import Database from "better-sqlite3";
 import { db } from "@/lib/db/schema";
+import * as authSchema from "@/lib/db/auth-schema"; // Import Better-Auth user table schema
+
 
 export const auth = betterAuth({
 database: drizzleAdapter(db, {
-        provider: "sqlite", // or "mysql", "pg"
+        provider: "sqlite", // or "mysql", "pg",
+        schema: authSchema
     }),
 
   plugins: [username()],
